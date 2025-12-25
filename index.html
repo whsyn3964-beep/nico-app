@@ -8,7 +8,7 @@
 <style>
 body{
   margin:0;
-  font-family:Tahoma, Arial;
+  font-family:Tahama, Arial;
   background:#0f0f0f;
   color:#fff;
   display:flex;
@@ -55,24 +55,16 @@ button{
   cursor:pointer;
 }
 
-#mic{
-  background:#2196f3;
-  color:#fff;
-}
-
-#send{
-  background:#4caf50;
-  color:#000;
-}
+#mic{ background:#2196f3; color:#fff; }
+#send{ background:#4caf50; color:#000; }
 
 #reply{
   margin-top:15px;
-  min-height:70px;
+  min-height:80px;
   background:#111;
   border-radius:15px;
   padding:12px;
   font-size:16px;
-  overflow-y:auto;
 }
 </style>
 </head>
@@ -89,23 +81,49 @@ button{
     <button id="send" onclick="handleText()">📩 إرسال</button>
   </div>
 
-  <div id="reply">أنا جاهز 😄</div>
+  <div id="reply">أنا جاهز للمساعدة 😄</div>
 </div>
 
 <script>
-function replyTo(text){
-  let reply = "لم أفهم سؤالك";
+let userName = "";
 
-  if(text.includes("اسمك")) reply = "اسمي نيكو";
-  else if(text.includes("مرحبا")) reply = "أهلاً بك 🌸";
-  else if(text.includes("كيف حالك")) reply = "أنا بخير، ماذا عنك؟";
-  else if(text.includes("من انت")) reply = "أنا مساعدك الذكي نيكو";
+function replyTo(text){
+  text = text.toLowerCase();
+  let reply = "لم أفهم قصدك، حاول بصيغة أخرى 🙂";
+
+  if(text.includes("اسمي")){
+    userName = text.replace("اسمي","").trim();
+    reply = "تشرفت بمعرفتك يا " + userName + " 🌸";
+  }
+  else if(text.includes("اسمك")){
+    reply = "اسمي نيكو، مساعدك الذكي 🤖";
+  }
+  else if(text.includes("مرحبا") || text.includes("السلام")){
+    reply = "أهلاً وسهلاً " + (userName || "") + " 👋";
+  }
+  else if(text.includes("كيف حالك")){
+    reply = "أنا بخير دائمًا 😊 ماذا عنك؟";
+  }
+  else if(text.includes("ماذا تفعل")){
+    reply = "أستمع إليك وأحاول مساعدتك قدر الإمكان";
+  }
+  else if(text.includes("وقت")){
+    reply = "الوقت الآن هو " + new Date().toLocaleTimeString("ar-EG");
+  }
+  else if(text.includes("تاريخ")){
+    reply = "اليوم هو " + new Date().toLocaleDateString("ar-EG");
+  }
+  else if(text.includes("احبك")){
+    reply = "وأنا أحب الحديث معك ❤️";
+  }
+  else if(text.includes("وداعا") || text.includes("باي")){
+    reply = "إلى اللقاء، سأكون هنا دائمًا 👋";
+  }
 
   document.getElementById("reply").innerText = reply;
 
   let speech = new SpeechSynthesisUtterance(reply);
   speech.lang = "ar-SA";
-  speech.rate = 1;
   window.speechSynthesis.speak(speech);
 }
 
