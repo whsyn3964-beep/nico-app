@@ -75,7 +75,26 @@
   <button onclick="send()">إرسال</button>
 </footer>
 
-<script>
+// ===== ذاكرة نيكو =====
+let memory = JSON.parse(localStorage.getItem("nicoMemory")) || [];
+
+// تحميل الذاكرة عند فتح الصفحة
+memory.forEach(item => {
+  addMsg(item.text, item.sender);
+});
+
+// حفظ الرسائل في الذاكرة
+function saveToMemory(text, sender) {
+  memory.push({ text, sender });
+  localStorage.setItem("nicoMemory", JSON.stringify(memory));
+}
+
+// تعديل addMsg لحفظ الكلام
+const oldAddMsg = addMsg;
+addMsg = function(text, sender) {
+  oldAddMsg(text, sender);
+  saveToMemory(text, sender);
+};<script>
   const chat = document.getElementById("chat");
 
   function addMsg(text, cls) {
