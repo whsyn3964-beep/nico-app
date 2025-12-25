@@ -1,127 +1,57 @@
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>NICO – مساعد ذكي</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-    header {
-      background: #020617;
-      padding: 12px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 18px;
-    }
-    #chat {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-    }
-    .msg {
-      margin: 8px 0;
-      padding: 10px;
-      border-radius: 8px;
-      max-width: 80%;
-    }
-    .user {
-      background: #2563eb;
-      align-self: flex-end;
-    }
-    .bot {
-      background: #334155;
-      align-self: flex-start;
-    }
-    footer {
-      display: flex;
-      padding: 10px;
-      background: #020617;
-    }
-    input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      outline: none;
-    }
-    button {
-      margin-left: 8px;
-      padding: 10px 14px;
-      border: none;
-      border-radius: 6px;
-      background: #22c55e;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>نيكو</title>
+<style>
+body {
+  font-family: Arial;
+  background: #111;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+button {
+  padding: 15px;
+  font-size: 18px;
+  margin: 10px;
+  width: 80%;
+}
+#text {
+  margin-top: 20px;
+  font-size: 20px;
+}
+</style>
 </head>
+
 <body>
 
-<header>🤖 NICO – مساعدك الذكي</header>
+<h2>🤖 نيكو</h2>
 
-<div id="chat"></div>
+<button onclick="startListening()">🎤 تحدث</button>
 
-<footer>
-  <input id="input" placeholder="اكتب سؤالك هنا..." />
-  <button onclick="send()">إرسال</button>
-</footer>
+<div id="text">اضغط وتكلم</div>
 
-// ===== ذاكرة نيكو =====
-let memory = JSON.parse(localStorage.getItem("nicoMemory")) || [];
+<script>
+function startListening() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = "ar-SA";
 
-// تحميل الذاكرة عند فتح الصفحة
-memory.forEach(item => {
-  addMsg(item.text, item.sender);
-});
+  recognition.onresult = function(event) {
+    const speech = event.results[0][0].transcript;
+    document.getElementById("text").innerText = speech;
+    speak("سمعتك تقول " + speech);
+  };
 
-// حفظ الرسائل في الذاكرة
-function saveToMemory(text, sender) {
-  memory.push({ text, sender });
-  localStorage.setItem("nicoMemory", JSON.stringify(memory));
+  recognition.start();
 }
 
-// تعديل addMsg لحفظ الكلام
-const oldAddMsg = addMsg;
-addMsg = function(text, sender) {
-  oldAddMsg(text, sender);
-  saveToMemory(text, sender);
-};<script>
-  const chat = document.getElementById("chat");
-
-  function addMsg(text, cls) {
-    const div = document.createElement("div");
-    div.className = "msg " + cls;
-    div.textContent = text;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-  }
-
-  function send() {
-    const input = document.getElementById("input");
-    const text = input.value.trim();
-    if (!text) return;
-
-    addMsg(text, "user");
-    input.value = "";
-
-    setTimeout(() => {
-      let reply = "أنا نيكو 🤖، ما زلت أتعلم. سؤالك وصلني.";
-      if (text.includes("مرحبا")) reply = "أهلًا بك 🌟";
-      if (text.includes("اسمك")) reply = "اسمي نيكو، مساعد ذكي عربي";
-      if (text.includes("كيف")) reply = "أنا بخير 😊 كيف أساعدك؟";
-
-      addMsg(reply, "bot");
-    }, 500);
-  }
+function speak(msg) {
+  const speech = new SpeechSynthesisUtterance(msg);
+  speech.lang = "ar-SA";
+  window.speechSynthesis.speak(speech);
+}
 </script>
 
 </body>
