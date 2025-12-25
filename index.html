@@ -1,32 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>نيكو 🤖</title>
+
+<style>
+body {
+  background:#111;
+  color:#fff;
+  font-family: Arial;
+  text-align:center;
+  padding:20px;
+}
+
+#box {
+  max-width:500px;
+  margin:auto;
+  background:#1c1c1c;
+  padding:20px;
+  border-radius:12px;
+}
+
+input {
+  width:90%;
+  padding:12px;
+  font-size:16px;
+  border-radius:8px;
+  border:none;
+  margin-bottom:10px;
+}
+
+button {
+  width:45%;
+  padding:12px;
+  font-size:16px;
+  margin:5px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+#mic { background:#0a84ff; color:#fff; }
+#send { background:#30d158; color:#000; }
+
+#reply {
+  margin-top:15px;
+  font-size:18px;
+  min-height:40px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="box">
+  <h2>🤖 نيكو</h2>
+
+  <input id="input" placeholder="اكتب أو اضغط المايك وتكلم">
+
+  <div>
+    <button id="mic" onclick="startListening()">🎤 مايك</button>
+    <button id="send" onclick="handleText()">📨 إرسال</button>
+  </div>
+
+  <div id="reply">أنا أسمعك...</div>
+</div>
+
 <script>
-function startListening() {
+function replyTo(text){
+  let reply = "لم أفهم سؤالك";
+
+  if(text.includes("اسمك")) reply = "اسمي نيكو";
+  else if(text.includes("مرحبا")) reply = "أهلا وسهلا بك";
+  else if(text.includes("كيف حالك")) reply = "أنا بخير، ماذا تريد أن أفعل؟";
+
+  document.getElementById("reply").innerText = reply;
+
+  const speech = new SpeechSynthesisUtterance(reply);
+  speech.lang = "ar-SA";
+  window.speechSynthesis.speak(speech);
+}
+
+function handleText(){
+  const text = document.getElementById("input").value;
+  if(text.trim() !== "") replyTo(text);
+}
+
+function startListening(){
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = new SpeechRecognition();
   recognition.lang = "ar-SA";
 
-  recognition.onresult = function(event) {
-    const speech = event.results[0][0].transcript;
-
-    let reply = "لم أفهم سؤالك";
-
-    if (speech.includes("اسمك")) {
-      reply = "اسمي نيكو";
-    } else if (speech.includes("مرحبا")) {
-      reply = "أهلا وسهلا بك";
-    } else if (speech.includes("كيف حالك")) {
-      reply = "أنا بخير، ماذا تريد أن أفعل؟";
-    }
-
-    document.getElementById("text").innerText = reply;
-    speak(reply);
+  recognition.onresult = function(event){
+    const text = event.results[0][0].transcript;
+    document.getElementById("input").value = text;
+    replyTo(text);
   };
 
   recognition.start();
 }
-
-function speak(msg) {
-  const speech = new SpeechSynthesisUtterance(msg);
-  speech.lang = "ar-SA";
-  window.speechSynthesis.speak(speech);
-}
 </script>
+
+</body>
+</html>
