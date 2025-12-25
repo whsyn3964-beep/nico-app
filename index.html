@@ -1,37 +1,3 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-<meta charset="UTF-8">
-<title>نيكو</title>
-<style>
-body {
-  font-family: Arial;
-  background: #111;
-  color: #fff;
-  text-align: center;
-  padding: 20px;
-}
-button {
-  padding: 15px;
-  font-size: 18px;
-  margin: 10px;
-  width: 80%;
-}
-#text {
-  margin-top: 20px;
-  font-size: 20px;
-}
-</style>
-</head>
-
-<body>
-
-<h2>🤖 نيكو</h2>
-
-<button onclick="startListening()">🎤 تحدث</button>
-
-<div id="text">اضغط وتكلم</div>
-
 <script>
 function startListening() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -40,8 +6,19 @@ function startListening() {
 
   recognition.onresult = function(event) {
     const speech = event.results[0][0].transcript;
-    document.getElementById("text").innerText = speech;
-    speak("سمعتك تقول " + speech);
+
+    let reply = "لم أفهم سؤالك";
+
+    if (speech.includes("اسمك")) {
+      reply = "اسمي نيكو";
+    } else if (speech.includes("مرحبا")) {
+      reply = "أهلا وسهلا بك";
+    } else if (speech.includes("كيف حالك")) {
+      reply = "أنا بخير، ماذا تريد أن أفعل؟";
+    }
+
+    document.getElementById("text").innerText = reply;
+    speak(reply);
   };
 
   recognition.start();
@@ -53,6 +30,3 @@ function speak(msg) {
   window.speechSynthesis.speak(speech);
 }
 </script>
-
-</body>
-</html>
