@@ -2,120 +2,104 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NICO AI</title>
-
+<title>NICO</title>
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#0f0f0f;
-  color:#fff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
+body {
+    font-family: Arial;
+    background: #111;
+    color: white;
+    text-align: center;
+    padding: 20px;
 }
-#box{
-  width:90%;
-  max-width:420px;
-  background:#1c1c1c;
-  border-radius:22px;
-  padding:20px;
+#box {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 15px;
 }
-h2{text-align:center;}
-input{
-  width:100%;
-  padding:14px;
-  border-radius:30px;
-  border:none;
-  font-size:16px;
-  margin-bottom:10px;
+input {
+    width: 90%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
 }
-.buttons{
-  display:flex;
-  gap:10px;
+button {
+    margin-top: 10px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
 }
-button{
-  flex:1;
-  padding:14px;
-  border-radius:30px;
-  border:none;
-  font-size:16px;
-}
-#mic{background:#2196f3;color:#fff;}
-#send{background:#4caf50;color:#000;}
-#reply{
-  margin-top:15px;
-  min-height:90px;
-  background:#111;
-  border-radius:15px;
-  padding:12px;
+#send { background: #4CAF50; color: white; }
+#mic { background: #2196F3; color: white; }
+#reply {
+    margin-top: 15px;
+    background: #000;
+    padding: 15px;
+    border-radius: 10px;
 }
 </style>
 </head>
 
 <body>
+
+<h2>🤖 نيكو</h2>
+
 <div id="box">
-  <h2>🤖 نيكو</h2>
-  <input id="input" placeholder="تحدث أو اكتب">
-  <div class="buttons">
-    <button id="mic" onclick="startListening()">🎤 مايك</button>
-    <button id="send" onclick="handleText()">📩 إرسال</button>
-  </div>
-  <div id="reply">أنا أتعلم منك… 🧠</div>
+    <input id="question" placeholder="اكتب سؤالك هنا">
+    <br>
+    <button id="send">📨 إرسال</button>
+    <button id="mic">🎤 مايك</button>
+
+    <div id="reply">أنا جاهز 😊</div>
 </div>
 
 <script>
-let memory = JSON.parse(localStorage.getItem("nicoMemory")) || {};
-let lastQuestion = "";
+// قاعدة معرفة بسيطة (يمكنك زيادتها)
+const knowledge = {
+    "ماهو وقت النوم المثالي": 
+    "وقت النوم المثالي هو بين العاشرة والحادية عشرة مساءً، لأن الجسم يفرز هرمون الميلاتونين في هذا الوقت مما يساعد على نوم عميق وصحة أفضل.",
 
-function speak(text){
-  let s = new SpeechSynthesisUtterance(text);
-  s.lang = "ar-SA";
-  speechSynthesis.speak(s);
+    "كم ساعة نوم": 
+    "يحتاج البالغ من 7 إلى 9 ساعات نوم يومياً.",
+
+    "ما هو الصداع":
+    "الصداع هو ألم في الرأس وقد يكون بسبب التوتر أو قلة النوم أو الجفاف."
+};
+
+function speak(text) {
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = "ar-SA";
+    msg.rate = 0.9;
+    speechSynthesis.speak(msg);
 }
 
-function replyTo(text){
-  text = text.trim().toLowerCase();
-  let reply = "";
+document.getElementById("send").onclick = () => {
+    const q = document.getElementById("question").value.trim();
+    let answer = knowledge[q];
 
-  // لو السؤال محفوظ
-  if(memory[text]){
-    reply = memory[text];
-  }
-  // تعليم نيكو
-  else if(lastQuestion){
-    memory[lastQuestion] = text;
-    localStorage.setItem("nicoMemory", JSON.stringify(memory));
-    reply = "تمام 👍 تعلمت هذا الرد";
-    lastQuestion = "";
-  }
-  else{
-    reply = "لا أعرف الإجابة، علّمني 😄";
-    lastQuestion = text;
-  }
+    if (!answer) {
+        answer = "لا أعرف الإجابة بدقة، يمكنك تعليمي أو إعادة صياغة السؤال.";
+    }
 
-  document.getElementById("reply").innerText = reply;
-  speak(reply);
-}
+    document.getElementById("reply").innerText = answer;
+    speak(answer);
+};
 
-function handleText(){
-  let t = document.getElementById("input").value;
-  if(t) replyTo(t);
-}
+// المايك
+const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+rec.lang = "ar-SA";
 
-function startListening(){
-  let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let rec = new SR();
-  rec.lang = "ar-SA";
-  rec.onresult = e=>{
-    let text = e.results[0][0].transcript;
-    document.getElementById("input").value = text;
-    replyTo(text);
-  };
-  rec.start();
-}
+document.getElementById("mic").onclick = () => {
+    rec.start();
+};
+
+rec.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    document.getElementById("question").value = text;
+};
 </script>
+
 </body>
 </html>
