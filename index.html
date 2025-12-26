@@ -1,160 +1,120 @@
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>NICO</title>
+<title>نيكو - المساعد الذكي</title>
 <style>
 body {
-  margin: 0;
-  font-family: Tahoma, Arial;
-  background: linear-gradient(180deg, #111, #000);
+  font-family: Arial;
+  background: #111;
   color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  margin: 0;
+  padding: 0;
 }
-
 #app {
-  width: 95%;
-  max-width: 420px;
-  background: #1b1b1b;
-  border-radius: 25px;
+  max-width: 500px;
+  margin: auto;
   padding: 20px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.6);
+}
+h1 {
   text-align: center;
 }
-
-h1 {
-  margin-top: 5px;
-}
-
-input {
-  width: 90%;
-  padding: 14px;
-  border-radius: 30px;
-  border: none;
+textarea {
+  width: 100%;
+  min-height: 60px;
   font-size: 16px;
-  outline: none;
-  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
 }
-
+button {
+  width: 48%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+#send { background: #00c853; }
+#voice { background: #2979ff; }
+#answer {
+  margin-top: 15px;
+  background: #222;
+  padding: 15px;
+  border-radius: 8px;
+  min-height: 50px;
+}
 .buttons {
   display: flex;
   justify-content: space-between;
-}
-
-button {
-  width: 48%;
-  padding: 14px;
-  border-radius: 30px;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-#mic {
-  background: #1e90ff;
-  color: white;
-}
-
-#send {
-  background: #2ecc71;
-  color: black;
-}
-
-#reply {
-  margin-top: 20px;
-  background: #111;
-  border-radius: 20px;
-  padding: 15px;
-  min-height: 60px;
-  font-size: 17px;
 }
 </style>
 </head>
 
 <body>
-
 <div id="app">
-  <h1>🤖 نيكو</h1>
+<h1>🤖 نيكو</h1>
 
-  <input id="input" placeholder="اكتب سؤالك هنا...">
+<textarea id="question" placeholder="اكتب سؤالك هنا..."></textarea>
 
-  <div class="buttons">
-    <button id="mic" onclick="startListening()">🎤 مايك</button>
-    <button id="send" onclick="handleText()">📩 إرسال</button>
-  </div>
+<div class="buttons">
+  <button id="send" onclick="handleText()">إرسال</button>
+  <button id="voice" onclick="startVoice()">🎤 صوت</button>
+</div>
 
-  <div id="reply">أنا نيكو، اسألني أي شيء 😊</div>
+<div id="answer">أنا جاهز 😊</div>
 </div>
 
 <script>
-function speak(text) {
-  const s = new SpeechSynthesisUtterance(text);
-  s.lang = "ar-SA";
-  speechSynthesis.speak(s);
-}
-
 function replyTo(text) {
+  let reply = "لم أفهم سؤالك، حاول مرة أخرى";
+
   text = text.toLowerCase();
-  let reply = "سؤال جميل، لكن لم أفهمه جيدًا. حاول صياغته بشكل أوضح 😊";
 
-  // 🩺 طب
-  if (text.includes("النوم"))
-    reply = "أفضل وقت للنوم بين 10 مساءً و11، والنوم من 7 إلى 8 ساعات مفيد للصحة.";
-  else if (text.includes("الصداع"))
-    reply = "الصداع قد يكون بسبب التوتر أو قلة النوم أو الجفاف. اشرب ماء وارتَح.";
-  else if (text.includes("الضغط"))
-    reply = "ضغط الدم الطبيعي حوالي 120 على 80.";
+  if (text.includes("مرحبا") || text.includes("السلام")) 
+    reply = "أهلاً بك، أنا نيكو";
 
-  // 🌱 حياة
-  else if (text.includes("نجاح"))
-    reply = "النجاح يحتاج صبرًا واستمرارية، وليس سرعة.";
-  else if (text.includes("حزين"))
-    reply = "مشاعرك مهمة، خذ وقتك وتكلم مع شخص تثق به.";
+  else if (text.includes("اسمك")) 
+    reply = "اسمي نيكو، مساعد ذكي";
 
-  // 🔬 علم
-  else if (text.includes("الشمس"))
-    reply = "الشمس نجم يمد الأرض بالطاقة والحرارة اللازمة للحياة.";
-  else if (text.includes("الماء"))
-    reply = "الماء يشكل حوالي 70٪ من جسم الإنسان.";
+  else if (text.includes("برمجة")) 
+    reply = "البرمجة هي كتابة أوامر للحاسوب بلغة يفهمها";
 
-  // 💻 برمجة
-  else if (text.includes("html"))
-    reply = "HTML هي لغة بناء صفحات الويب.";
-  else if (text.includes("css"))
-    reply = "CSS مسؤولة عن تصميم وتنسيق المواقع.";
-  else if (text.includes("javascript"))
-    reply = "JavaScript تجعل المواقع تفاعلية.";
+  else if (text.includes("أينشتاين")) 
+    reply = "ألبرت أينشتاين عالم فيزياء وضع نظرية النسبية";
 
-  // 👤 مشاهير
-  else if (text.includes("إيلون ماسك"))
-    reply = "إيلون ماسك رجل أعمال معروف، مؤسس تسلا وسبيس إكس.";
-  else if (text.includes("أينشتاين"))
-    reply = "ألبرت أينشتاين عالم فيزياء وضع نظرية النسبية.";
+  else if (text.includes("الطب")) 
+    reply = "الطب علم يهتم بصحة الإنسان وتشخيص الأمراض";
 
-  document.getElementById("reply").innerText = reply;
+  else if (text.includes("الذكاء")) 
+    reply = "الذكاء الاصطناعي هو محاكاة تفكير الإنسان بالحاسوب";
+
+  document.getElementById("answer").innerText = reply;
   speak(reply);
 }
 
 function handleText() {
-  const text = document.getElementById("input").value;
+  const text = document.getElementById("question").value;
   if (text.trim() !== "") replyTo(text);
 }
 
-function startListening() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const r = new SR();
-  r.lang = "ar-SA";
-  r.onresult = e => {
-    const text = e.results[0][0].transcript;
-    document.getElementById("input").value = text;
-    replyTo(text);
+function speak(text) {
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = "ar-SA";
+  speechSynthesis.speak(msg);
+}
+
+function startVoice() {
+  const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  rec.lang = "ar-SA";
+  rec.onresult = e => {
+    document.getElementById("question").value = e.results[0][0].transcript;
+    handleText();
   };
-  r.start();
+  rec.start();
 }
 </script>
-
 </body>
 </html>
